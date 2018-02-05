@@ -38,12 +38,20 @@ namespace CosmosMagic
             if (RegisteredTypes.Contains(nameof(T))) return;
 
             CosmosManager<T>.Manager.InitializeCollection(databaseId, collectionId, CosmosAuthKey);
+
+            var collection = localDb.GetCollection<T>(nameof(T));
+            if (collection.Count() == 0)
+            {
+                var items = CosmosManager<T>.Manager.GetAllItems();
+                localDb.GetCollection<T>(nameof(T)).InsertBulk((IEnumerable<T>)items);
+            }
+
             RegisteredTypes.Add(nameof(T));
         }
 
         public async Task PullAsync<T>() where T : CosmosEntity
         {
-            var items = await CosmosManager<T>.Manager.GetItems();
+            var items = await CosmosManager<T>.Manager.GetAllItems();
             var localItemCollection = localDb.GetCollection<T>(nameof(T));
             var syncConflicts = new Dictionary<T, LiteException>();
 

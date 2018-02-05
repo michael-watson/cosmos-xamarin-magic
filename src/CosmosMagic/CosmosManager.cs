@@ -8,7 +8,7 @@ using Microsoft.Azure.Documents.Linq;
 
 namespace CosmosMagic
 {
-    internal class CosmosManager<T> where T : CosmosEntity
+    public class CosmosManager<T> where T : CosmosEntity
     {
         static CosmosManager<T> manager = new CosmosManager<T>();
         public static CosmosManager<T> Manager
@@ -32,7 +32,7 @@ namespace CosmosMagic
             Client = new DocumentClient(UriFactory.CreateDocumentCollectionUri(databaseId, collectionId), authKey);
         }
 
-        public async Task<List<T>> GetItems()
+        public async Task<List<T>> GetAllItems()
         {
             var query = Client.CreateDocumentQuery<T>(collectionLink, new FeedOptions { MaxItemCount = -1 })
                               .AsDocumentQuery();
